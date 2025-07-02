@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -29,17 +30,26 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	float vertices[] = {
-		0.5f, 0.5f, 0.5f, // top right (0)
-		0.5f, -0.5f, 0.0f, // bottom right (1)
-		-0.5f, -0.5f, 0.0f, // bottom left (2)
-		-0.5f, 0.5f, 0.0f, // top left (3)
-	};
+	// vertices for two triangles
+	std::vector<float> vertices;
+	for (int v = 0; v < 2; v++) {
+		float xOff = (v == 0) ? -0.5f : 0.5f;
 
-	unsigned int indices[] = { // we start from 0
-		0, 1, 3, // first triangle
-		1, 2, 3 // second triangle
-	};
+		// bottom left
+		vertices.push_back(-0.5f + xOff);
+		vertices.push_back(-0.5f);
+		vertices.push_back(0.0f);
+
+		// bottom right
+		vertices.push_back(0.5f + xOff);
+		vertices.push_back(-0.5f);
+		vertices.push_back(0.0f);
+
+		// top
+		vertices.push_back(0.0f + xOff);
+		vertices.push_back(0.5f);
+		vertices.push_back(0.0f);
+	}
 
 	// Window Init
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "NoobOpenGL", NULL, NULL);
@@ -120,22 +130,19 @@ int main() {
 			// calls to 'glEnableVertexAttribArray' (or its disable)
 			// Vertex attribute configs via glVertexAttribPointer
 			// VBOs associated with vertex attribs by calls to 'glVertexAttribPointer'
-	GLuint VAO, VBO, EBO;
+	GLuint VAO, VBO;
 	
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO); // VBO - vertex buffer - memory on the GPU to store vertex 
-	glGenBuffers(1, &EBO); // EBO - index array buffer - memory on GPU to store indices
+
 	// bind VAO
 	glBindVertexArray(VAO);
 
 	// copy vertices array in a vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// static draw - data set once (vertices don't change) and used many times
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // copies vertex data into 
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW); // copies vertex data into 
 
-	// copy index array in an element buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// LINKING VERTEX SHADER ATTRIBUTES TO VERTEX DATA -- specifying how openGL should interpret vertex data before rendering
 		// specifying 'position' attribute in vertex shader w/ layout (location = 0)
@@ -160,8 +167,7 @@ int main() {
 		// Drawing
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-		// glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// swap buffers and poll IO events
 		glfwSwapBuffers(window);
