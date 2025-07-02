@@ -98,18 +98,12 @@ int main() {
 	glGetProgramiv(shaderProgram, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 
-	glUseProgram(shaderProgram);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	// LINKING VERTEX SHADER ATTRIBUTES TO VERTEX DATA -- specifying how openGL should interpret vertex data before rendering
-		// specifying 'position' attribute in vertex shader w/ layout (location = 0)
-		// vertex attribute is a vec3, each vec coordinate is a float. thus, each vertex is 12B apart
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
-	glEnableVertexAttribArray(0);
 
 	// VERTEX ARRAY OBJECT (VAO) -- makes above config process more scalable
 		// store all state configs into an object and bind this object to restore its state.
@@ -133,14 +127,14 @@ int main() {
 	// static draw - data set once (vertices don't change) and used many times
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // copies vertex data into buffer 
 	
-	// config vertex attribs
-	glVertexAttribPointer(0, 3, GL_FLOAT, sizeof(vertices), 3 * sizeof(float), (void*)0);
+	// LINKING VERTEX SHADER ATTRIBUTES TO VERTEX DATA -- specifying how openGL should interpret vertex data before rendering
+		// specifying 'position' attribute in vertex shader w/ layout (location = 0)
+		// vertex attribute is a vec3, each vec coordinate is a float. thus, each vertex is 12B apart
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+	// note that this is allowed, the call to glVertexAttribPointer registered the VBO (recorded into VAO) as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	
 
 	// event loop
 	while (!glfwWindowShouldClose(window)) {
