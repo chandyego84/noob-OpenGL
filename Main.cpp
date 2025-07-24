@@ -31,11 +31,15 @@ const char* fragmentShaderSource1 = "#version 330 core\n"
 	"	FragColor = vertexColor;\n"
 	"}\0";
 
+// uniforms: another way to pass data from our app on the CPU to shaders on the GPU
+	// global -- unique per shader program object, can be accessed from any shader at any stage in shader program
 const char* fragmentShaderSource2 = "#version 330 core\n"
 	"out vec4 FragColor;\n"
+	"uniform vec4 ourColor;\n"
+
 	"void main()\n"
 	"{\n"
-	"	FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+	"	FragColor = ourColor;\n"
 	"}\0";
 
 
@@ -107,7 +111,7 @@ int main() {
 	// FRAGMENT SHADER - calcualting color outputs of pixels
 	unsigned int fragmentShader1, fragmentShader2;
 
-	// fragment1 -- orange
+	// fragment1
 	fragmentShader1 = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader1, 1, &fragmentShaderSource1, NULL);
 	glCompileShader(fragmentShader1);
@@ -119,12 +123,12 @@ int main() {
 		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 
-	// fragment2 -- yellow
+	// fragment2
 	fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader2, 1, &fragmentShaderSource2, NULL);
 
 	// SHADER PROGRAM (obj) - final linked version of multiple shaders combined
-	unsigned int shaderProgram1, shaderProgram2; // orange, yellow fragment shaders
+	unsigned int shaderProgram1, shaderProgram2; // fragment shaders
 	shaderProgram1 = glCreateProgram();
 	shaderProgram2 = glCreateProgram();
 
@@ -142,7 +146,6 @@ int main() {
 	glAttachShader(shaderProgram2, vertexShader);
 	glAttachShader(shaderProgram2, fragmentShader2);
 	glLinkProgram(shaderProgram2);
-
 	
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader1);
@@ -210,6 +213,11 @@ int main() {
 
 		// Draw second shape
 		glUseProgram(shaderProgram2);
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram2, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
 		glBindVertexArray(VAO[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
