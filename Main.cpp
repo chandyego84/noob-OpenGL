@@ -20,7 +20,7 @@ const char* vertexShaderSource = "#version 330 core\n"
 
 	"void main()\n"
 	"{\n"
-	"	gl_Position = vec4(aPos, 1.0);\n"
+	"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"	vertexColor = aColor;\n"
 	"}\0";
 
@@ -56,10 +56,11 @@ int main() {
 	std::vector<float> vertices;
 	for (int v = 0; v < 2; v++) {
 		float xOff = (v == 0) ? -0.5f : 0.5f;
+		int isUpsideDown = (v == 0) ? 1 : -1;
 
 		// bottom left
 		vertices.push_back(-0.5f + xOff);
-		vertices.push_back(-0.5f);
+		vertices.push_back(isUpsideDown * -0.5f);
 		vertices.push_back(0.0f);
 		// color (R)
 		vertices.push_back(1.0f);
@@ -68,7 +69,7 @@ int main() {
 
 		// bottom right
 		vertices.push_back(0.5f + xOff);
-		vertices.push_back(-0.5f);
+		vertices.push_back(isUpsideDown * -0.5f);
 		vertices.push_back(0.0f);
 		// color (G)
 		vertices.push_back(0.0f);
@@ -77,7 +78,7 @@ int main() {
 
 		// top
 		vertices.push_back(0.0f + xOff);
-		vertices.push_back(0.5f);
+		vertices.push_back(isUpsideDown * 0.5f); 
 		vertices.push_back(0.0f);
 		// color (B)
 		vertices.push_back(0.0f);
