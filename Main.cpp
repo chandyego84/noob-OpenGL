@@ -16,24 +16,28 @@ const char* vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n" // position variable with attribute position 0
 	"layout (location = 1) in vec3 aColor;\n" // position variable with attribute position 1
 
-	"uniform float xOffset;\n"
+	// "uniform float xOffset;\n"
 
+	"out vec3 vertexPosition;\n" // output the position to the fragment shader
 	"out vec3 vertexColor;\n" // output a color fragment shader
 
 	"void main()\n"
 	"{\n"
-	"	gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);\n"
+	"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"	vertexPosition = aPos;\n"	
 	"	vertexColor = aColor;\n"
 	"}\0";
 
 const char* fragmentShaderSource1 = "#version 330 core\n"
+	"in vec3 vertexPosition;\n"
 	"in vec3 vertexColor;\n" // input variable from the vertex shader (same name and type)
+	
 
 	"out vec4 FragColor;\n"
 	
 	"void main()\n"
 	"{\n"
-	"	FragColor = vec4(vertexColor, 1.0);\n"
+	"	FragColor = vec4(vertexPosition, 1.0);\n"
 	"}\0";
 
 // uniforms: another way to pass data from our app on the CPU to shaders on the GPU
@@ -256,10 +260,12 @@ int main() {
 		float greenValue = sin(timeValue) / 2.0f + 0.5f;
 		int vertexColorLocation = glGetUniformLocation(shaderProgram2, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
+		
+		/*
 		float vOffset = -0.5f;
 		int vertexOffsetLocation = glGetUniformLocation(shaderProgram2, "xOffset");
 		glUniform1f(vertexOffsetLocation, vOffset);
+		*/
 
 		glBindVertexArray(VAO[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
