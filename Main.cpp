@@ -16,11 +16,13 @@ const char* vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n" // position variable with attribute position 0
 	"layout (location = 1) in vec3 aColor;\n" // position variable with attribute position 1
 
+	"uniform float xOffset;\n"
+
 	"out vec3 vertexColor;\n" // output a color fragment shader
 
 	"void main()\n"
 	"{\n"
-	"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"	gl_Position = vec4(aPos.x + offset, aPos.y, aPos.z, 1.0);\n"
 	"	vertexColor = aColor;\n"
 	"}\0";
 
@@ -254,6 +256,10 @@ int main() {
 		float greenValue = sin(timeValue) / 2.0f + 0.5f;
 		int vertexColorLocation = glGetUniformLocation(shaderProgram2, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+		float vOffset = -0.5f;
+		int vertexOffsetLocation = glGetUniformLocation(shaderProgram2, "xOffset");
+		glUniform1f(vertexOffsetLocation, vOffset);
 
 		glBindVertexArray(VAO[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
