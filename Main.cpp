@@ -231,7 +231,7 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// uncomment to enable wireframe render 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// event loop
 	while (!glfwWindowShouldClose(window)) {
