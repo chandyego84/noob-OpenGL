@@ -144,15 +144,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="fragment.glsl" />
-    <None Include="vertex.glsl" />
+    <None Include="basic_tri_fragment.glsl" />
+    <None Include="basic_tri_vertex.glsl" />
+    <None Include="texture_fragment.glsl" />
+    <None Include="texture_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\container.jpg" />
+    <Image Include="container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

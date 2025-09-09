@@ -35,10 +35,16 @@
     <None Include=".gitignore">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="vertex.glsl">
+    <None Include="basic_tri_vertex.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="fragment.glsl">
+    <None Include="basic_tri_fragment.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="texture_vertex.glsl">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="texture_fragment.glsl">
       <Filter>Resource Files\shaders</Filter>
     </None>
   </ItemGroup>
@@ -51,7 +57,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\container.jpg">
+    <Image Include="container.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
