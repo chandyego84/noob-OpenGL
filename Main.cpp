@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <algorithm> // Required for std::min, max
 #include "Shader.h"
 #include "stb_image.h"
 
@@ -9,6 +10,7 @@ const unsigned int HEIGHT = 600;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void setTextureInterp(GLFWwindow* window, float& interp);
 
 int main() {
     glfwInit();
@@ -98,7 +100,6 @@ int main() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-
     // create texture IDs
     GLuint textures[2];
     glGenTextures(2, textures);
@@ -108,12 +109,12 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, textures[0]); // all upcoming GL_TEXTURE_2D operations now have effect on this texture
 
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
@@ -131,27 +132,16 @@ int main() {
     // set second texture
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, textures[1]);
-    stbi_set_flip_vertically_on_load(true);
-    data = stbi_load("taylor.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
 
     // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);    
 
+    stbi_set_flip_vertically_on_load(true);
     data = stbi_load("taylor.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
@@ -168,9 +158,11 @@ int main() {
     shader.use();
     shader.setInt("texture1", 0); // use our first texture unit for sampler 1
     shader.setInt("texture2", 1); // use our second texture unit for sampler 2
+    float texture_interp = 0.5f; // uniform interpolation value of the textures
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
+        setTextureInterp(window, texture_interp);
 
         /* *************TRIANGLE CODE *************
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -192,6 +184,7 @@ int main() {
 
         // render
         shader.use();
+        shader.setFloat("interp", texture_interp);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -214,4 +207,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+}
+
+void setTextureInterp(GLFWwindow* window, float& interp) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        interp = std::min(1.0f, interp + 0.1f);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        interp = std::max(0.0f, interp - 0.1f);
+    }
 }
